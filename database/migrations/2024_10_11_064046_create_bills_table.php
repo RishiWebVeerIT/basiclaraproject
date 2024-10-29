@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('bills', function (Blueprint $table) {
             $table->id();
+            $table->integer('receipt_no')->nullable();
+            $table->integer('member_id')->nullable();
+            $table->integer('account_id')->nullable();
+            $table->string('head')->nullable();
+            $table->string('amount')->nullable();
+            $table->string('paid_amount')->nullable();
+            $table->string('outstanding')->nullable();
+            $table->integer('generated_by')->nullable();
             $table->timestamps();
         });
     }

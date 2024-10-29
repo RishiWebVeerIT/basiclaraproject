@@ -31,7 +31,7 @@ class LoginController extends Controller
 
         $user = new User;
         $user->email = $request->email;
-        $user->password = $request->password;
+        $user->password = Hash::make($request->password);
         $user->username = $request->username;
         $user->designation = $request->designation;
         $user->name = $request->name;
@@ -69,7 +69,7 @@ class LoginController extends Controller
             'password' => $request->password
         ]);
 
-        if(Auth::attempt($request->only($type, 'password')))
+        if(Auth::attempt($request->only($type, 'password'), $request->remember))
         {
             $admin = Auth::user();
 

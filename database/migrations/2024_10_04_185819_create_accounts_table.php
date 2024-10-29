@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('discount')->nullable();
             $table->string('paid_amount')->nullable();
             $table->string('pay_mode')->nullable();
+            $table->string('pay_method')->nullable();
             $table->string('balance_amount')->nullable();
             $table->string('join_date')->nullable();
             $table->string('due_date')->nullable();

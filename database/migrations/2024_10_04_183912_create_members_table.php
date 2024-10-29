@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->timestamp('join_date')->nullable();
             $table->string('join_month')->nullable();
+            $table->string('biometric')->nullable();
             $table->string('join_year')->nullable();
             $table->string('city')->nullable();
             $table->string('country')->nullable();

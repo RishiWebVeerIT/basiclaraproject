@@ -19,7 +19,7 @@ Route::any('/enquiry', [UserController::class,'enquiry'])->name('user.enquiry');
 
 Route::group(['prefix' => 'admin/console'], function(){
 
-   
+
     Route::group(['middleware' => ['auth']], function () {
 
         Route::get('/logout', [LoginController::class,'logout'])->name('logout');
@@ -48,9 +48,25 @@ Route::group(['prefix' => 'admin/console'], function(){
         Route::get('/get_dashbord_data', [AdminController::class,'get_dashbord_data'])->name('admin.get_dashbord_data');
 
         Route::post('/ajax_manage_all_member', [AdminController::class, 'ajax_manage_all_member'])->name('data.get');
+
+        Route::get('/fees_structure', [AdminController::class, 'fees_structure'])->name('admin.fees.structure');
+
+        Route::post('/add_fees_structure', [AdminController::class, 'add_fees_structure'])->name('admin.add.fees.structure');
+
+        Route::post('/delete_fees_structure', [AdminController::class, 'delete_fees_structure'])->name('admin.delete.fees.structure');
+
+        Route::post('/get_fees_structure', [AdminController::class, 'get_fees_structure'])->name('admin.get.fees.structure');
+
+        Route::post('/update_fees_structure', [AdminController::class, 'update_fees_structure'])->name('admin.update.fees.structure');
+
+         Route::post('/allot_fees_structure', [AdminController::class, 'allot_fees_structure'])->name('admin.allot.fees.structure');
+
+        Route::post('/ajax_manage_feehead', [AdminController::class, 'ajax_manage_feehead'])->name('feehead.data.get');
+
+        Route::get('/member_attendance', [AdminController::class, 'member_attendance'])->name('admin.member_attendance');
     });
 
-    
+
 Route::group(['middleware' => ['guest']], function () {
 
     Route::any('/loginCheck', [LoginController::class,'checkLogin'])->name('check_login');

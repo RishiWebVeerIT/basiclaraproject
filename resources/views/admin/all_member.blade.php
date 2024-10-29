@@ -75,7 +75,7 @@
       },
       columns: [
       { data: null, name: 'srno', orderable: false, searchable: false },
-      { data: 'id', name: 'id' },
+      { data: 'biometric', name: 'biometric' },
       { data: 'name', name: 'name', searchable: true },
       { data: 'age', name: 'age' },
       { data: 'gender', name: 'gender' },

@@ -76,6 +76,10 @@
                       
                     </div>
 
+                    <div class="col-12">
+                      <input type="checkbox" name="remember" id="remember">
+                      <label for="remember" class="form-label">Remember me</label>
+                    </div>
         
                     <div class="col-12">
                       <!-- <button class="btn btn-primary w-100" onclick="confirmation(event)" type="submit">Login</button> -->
