@@ -94,7 +94,8 @@
             <div class="card-body">
             <h5 class="card-title">Receipts</h5>
               <table class="table datatable">
-                    <tr>
+                <thead>
+                <tr>
                       <th>Sr. No</th>
                       <th>Plan</th>
                       <th>Month</th>
@@ -103,8 +104,10 @@
                       <th>Outstanding</th>
                       <th>Receipt</th>
                     </tr>
+                </thead>
+                    <tbody>
                     <?php $i = 1; ?>
-                    @foreach($receipts as $r)
+                    @foreach($accounts as $r)
                     <tr>
                       <th>{{$i++}}</th>
                       <td>{{$r->package}}</td>
@@ -113,9 +116,11 @@
 
                       <td>{{$r->paid_amount}}</td>
                       <td>{{$r->balance_amount}}</td>
-                      <td><a class="btn btn-secondary" href="{{route('admin.receipt',[$member->id,$r->id])}}">Receipt</a> &nbsp; </td>
+                      <td><a class="btn btn-success" href="{{route('admin.receipt',[$member->id,$r->id])}}">Receipts</a> &nbsp; @if($r->balance_amount > 0) <a class="btn btn-primary" href="{{route('admin.outstanding',[$r->id])}}">Pay Outstanding</a> @endif </td>
                     </tr>
                     @endforeach
+                    </tbody>
+                    
               </table>
             </div>
           </div>

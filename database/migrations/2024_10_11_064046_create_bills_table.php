@@ -18,8 +18,12 @@ return new class extends Migration
             $table->integer('account_id')->nullable();
             $table->string('head')->nullable();
             $table->string('amount')->nullable();
+            $table->string('discount')->nullable();
+            $table->string('after_discount_amount')->nullable();
             $table->string('paid_amount')->nullable();
             $table->string('outstanding')->nullable();
+            $table->string('pay_mode')->nullable();
+            $table->string('pay_method')->nullable();
             $table->integer('generated_by')->nullable();
             $table->timestamps();
         });

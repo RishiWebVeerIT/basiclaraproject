@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\FeeController;
 
 Route::get('/', [UserController::class,'index'])->name('home');
 Route::get('/bmi-calculator', [UserController::class,'bmi_calculator'])->name('calculator');
@@ -51,7 +52,15 @@ Route::group(['prefix' => 'admin/console'], function(){
 
         Route::get('/fees_structure', [AdminController::class, 'fees_structure'])->name('admin.fees.structure');
 
+        Route::get('/manage_offers', [AdminController::class, 'add_offer'])->name('admin.offer');
+
+        Route::post('/ajax_manage_offers', [AdminController::class, 'ajax_manage_offers'])->name('offers.data.get');
+
+        Route::post('/change_offer_status', [AdminController::class, 'change_offer_status'])->name('offers.change.status');
+
         Route::post('/add_fees_structure', [AdminController::class, 'add_fees_structure'])->name('admin.add.fees.structure');
+
+        Route::post('/store_offer', [AdminController::class, 'store_offer'])->name('admin.store.offer');
 
         Route::post('/delete_fees_structure', [AdminController::class, 'delete_fees_structure'])->name('admin.delete.fees.structure');
 
@@ -64,6 +73,17 @@ Route::group(['prefix' => 'admin/console'], function(){
         Route::post('/ajax_manage_feehead', [AdminController::class, 'ajax_manage_feehead'])->name('feehead.data.get');
 
         Route::get('/member_attendance', [AdminController::class, 'member_attendance'])->name('admin.member_attendance');
+
+        // =========================================Fees===========================================
+
+        Route::get('outstanding/{account_no}', [FeeController::class,'outstanding'])->name('admin.outstanding');
+
+        Route::post('/pay-outstanding', [FeeController::class,'pay_outstanding'])->name('admin.pay.outstanding');
+
+        Route::get('/member-receipts/{mid}/{id}', [FeeController::class,'member_receipts'])->name('admin.member.receipts');
+        
+
+
     });
 
 

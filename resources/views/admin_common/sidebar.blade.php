@@ -62,6 +62,13 @@
   </li>
 
   <li class="nav-item">
+    <a class="nav-link {{ Request::routeIs('admin.offer') ? '' : 'collapsed ' }}" href="{{Route('admin.offer')}}">
+      <i class="bi bi-person-lines-fill"></i>
+      <span>Manage Offers</span>
+    </a>
+  </li>
+
+  <li class="nav-item d-none">
     <a class="nav-link {{ Request::routeIs('admin.member_attendance') ? '' : 'collapsed ' }}" href="{{Route('admin.member_attendance')}}">
       <i class="bi bi-person-lines-fill"></i>
       <span>Member Attendance</span>

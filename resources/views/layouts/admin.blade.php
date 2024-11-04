@@ -50,12 +50,14 @@
 
     <div class="pagetitle">
       <h1>{{$pageTitle}}</h1>
+      @if($pageTitle != 'Dashboard')
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item"><a href="{{route('admin.dashboard')}}">Dashboard</a></li>
           <li class="breadcrumb-item active">{{$pageTitle}}</li>
         </ol>
       </nav>
+      @endif
     </div><!-- End Page Title -->
 
     @yield('section')

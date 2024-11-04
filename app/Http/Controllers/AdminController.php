@@ -9,6 +9,7 @@ use App\Models\Member;
 use App\Models\User;
 use App\Models\Bill;
 use App\Models\Account;
+use App\Models\Offer;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -88,11 +89,13 @@ class AdminController extends Controller
     {
         $pageTitle = 'Add Member';
         $members = Member::all();
-        return view('admin.add_member', compact('pageTitle','members'));
+        $offers = Offer::where('status',1)->get();
+        return view('admin.add_member', compact('pageTitle','members','offers'));
     }
 
     public function create_action(Request $req)
     {
+        // dd($req->all());
         $req->validate([
             'name' => 'required',
         'mobile' => 'required|min:11|numeric',
@@ -101,7 +104,6 @@ class AdminController extends Controller
         'gender' => 'required',
         'email' => 'required|email',
         'payable_amount' => 'required',
-        'discount' => 'required',
         'total_amount' => 'required',
         'paid_amount' => 'required',
         'balance_amount' => 'required|gte:0'
@@ -154,8 +156,6 @@ $member->age = $from->diff($to)->y;
         $account->discount = $req->discount;
         $account->total_amount = $req->total_amount;
         $account->paid_amount = $req->paid_amount;
-        $account->pay_mode = $req->pay_mode;
-        $account->pay_method = $req->pay_method;
         $account->balance_amount = $req->balance_amount;
         $account->join_date = $req->join_date;
 
@@ -178,11 +178,10 @@ $member->age = $from->diff($to)->y;
 
         $account->due_date = $due_date;
         $account->created_by = auth()->user()->id;
-        $account->updated_by = auth()->user()->id;
 
         $account->save();
 
-        $data = $req->only('heads', 'amount');
+        $data = $req->only('heads', 'amount','paid');
 $maxValue = Bill::max('receipt_no');
     foreach ($data['heads'] as $index => $value) {
         $bill = new Bill();
@@ -190,7 +189,14 @@ $maxValue = Bill::max('receipt_no');
             $bill->member_id = $member->id;
             $bill->account_id = $account->id;
             $bill->head = $data['heads'][$index];
+            $bill->discount = $req->discount;
+            $after_discount_amount = ((double)$data['amount'][$index] - (((double)$data['amount'][$index] / 100) * (int)$req->discount));
+            $bill->after_discount_amount = (double)$after_discount_amount;
             $bill->amount = $data['amount'][$index];
+            $bill->paid_amount = $data['paid'][$index];
+            $bill->pay_mode = $req->pay_mode;
+            $bill->pay_method = $req->pay_method;
+            $bill->outstanding = (double)$after_discount_amount - (double)$data['paid'][$index];
             $bill->generated_by = auth()->user()->id;
         $bill->save();
     }
@@ -244,9 +250,9 @@ $maxValue = Bill::max('receipt_no');
     public function edit_member($id)
     {
         $member = Member::findOrFail($id);
-        $pageTitle = 'Edit Members Details';
-        $receipts = Account::where('member_id',$id)->get();
-        return view('admin.edit_member', compact('pageTitle','member','receipts'));
+        $pageTitle = 'Members Details';
+        $accounts = Account::where('member_id',$id)->get();
+        return view('admin.edit_member', compact('pageTitle','member','accounts'));
     }
 
     public function continue_member($id)
@@ -342,7 +348,7 @@ $member->age = $from->diff($to)->y;
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
-                    $btn = '<a href="'. route('admin.edit_member',[$row->id]) .'" class="btn btn-success">Edit</a>';
+                    $btn = '<a href="'. route('admin.edit_member',[$row->id]) .'" class="btn btn-primary"><i class="bi bi-eye-fill"></i></a>';
                     return $btn;
                 })
                 ->addColumn('join_date', function ($user) {
@@ -364,6 +370,56 @@ $member->age = $from->diff($to)->y;
         return abort(403, 'Unauthorized action.');
     }
 
+    public function ajax_manage_offers(Request $request)
+    {
+
+        if ($request->ajax()) {
+
+
+                $data = DB::table('offers');
+                
+                if ($request->has('scroll') && $request->scroll != '') {
+                    $data->where('is_scroll', $request->scroll);
+                }
+
+                if ($request->has('status') && $request->status != '') {
+                    $data->where('status', $request->status);
+                }
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('action', function($row){
+                    $btn = '<a href="#" class="btn btn-success">Status</a> <a href="#" class="btn btn-danger">Edit</a>';
+                    return $btn;
+                })
+                ->addColumn('is_scroll', function ($user) {
+                    return $user->is_scroll ? '<button onclick="change_status(\'scroll\','.$user->id.')" class="badge bg-success"><i class="bi bi-check-circle me-1"></i> Scrolling </button>' : '<button class="badge bg-secondary" onclick="change_status(\'scroll\','.$user->id.')" ><i class="bi bi-exclamation-octagon me-1"></i> Static</button>';
+                })
+                ->addColumn('percent', function ($user) {
+                    return $user->percent . ' % ';
+                })
+                ->addColumn('status', function ($user) {
+                    return $user->status ? '<button class="badge bg-success" onclick="change_status(\'status\','.$user->id.')"><i class="bi bi-check-circle me-1"></i> Active </button>' : '<button class="badge bg-danger" onclick="change_status(\'status\','.$user->id.')" ><i class="bi bi-exclamation-octagon me-1"></i> Expired</button>';
+                })
+                ->rawColumns(['action','is_scroll','status','percent'])
+                ->make(true);
+        }
+        
+        return abort(403, 'Unauthorized action.');
+    }
+
+    public function store_offer(Request $request)
+    {
+        $offer = new Offer();
+        $offer->head = $request->head; 
+        $offer->percent = $request->percent; 
+        $offer->description = $request->description; 
+        $offer->status = 1; 
+        $offer->is_scroll = $request->is_scroll;
+        $offer->created_by = auth()->user()->id; 	
+        $offer->save();
+        return back()->with('success', 'Successfully Added.');
+    }
 
     public function  enquiry()
     {
@@ -386,6 +442,12 @@ $member->age = $from->diff($to)->y;
     {
         $pageTitle = 'DFC Register';
         return view('admin.dfc', compact('pageTitle'));
+    }
+
+    public function add_offer()
+    {
+        $pageTitle = 'Manage Offers';
+        return view('admin.add_offers', compact('pageTitle'));  
     }
 
     public function  receipt($mid,$id)
@@ -420,6 +482,24 @@ $member->age = $from->diff($to)->y;
         $fee->created_by = auth()->user()->id;
         $fee->save();
         return back()->with('success', 'Successfully Added.');
+    }
+
+    public function change_offer_status(Request $request)
+    {
+        $offer = Offer::findOrFail($request->id);
+        if($request->mode == 'scroll')
+        {
+            $offer->is_scroll = $offer->is_scroll ? '0' : '1';
+        }
+
+        if($request->mode == 'status')
+        {
+            $offer->status = $offer->status ? '0' : '1';
+        }
+
+        $offer->save();
+
+        return response()->json([ 'success' => 'Successfully Updated !' ]);
     }
 
     public function ajax_manage_feehead(Request $request)
@@ -511,19 +591,9 @@ $member->age = $from->diff($to)->y;
 
     public function allot_fees_structure(Request $request)
     {
+        $table = '';
         $fee = FeeHead::where('package',$request->package)->where('membership_type',$request->membership_type)->get();
-        $table = '<table class="table table-bordered text-center mt20_n_b1" id="dynamicTable">
-                        <thead>
-                            <tr>
-                            <th>Sr</th>
-                            <th>Fee Head</th>
-                            <th>Fee Amount</th>
-                            <th>Fee Paid</th>
-                            <th>Remove</th>
-                        </tr>
-                         </thead>
-                        <tbody>
-                        ';
+        
                         $i=1;
                         foreach ($fee as $value) {
                         $table .= '<tr class="dynamic-row">
@@ -534,7 +604,7 @@ $member->age = $from->diff($to)->y;
                             <td><button class="removeRow btn btn-danger"> X </button></td>
                         </tr>';
                         }
-                    $table .='</tbody></table>';
+
          return response()->json([ 'table' => $table ]);
     }
 
