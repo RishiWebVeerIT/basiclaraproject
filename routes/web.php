@@ -44,7 +44,7 @@ Route::group(['prefix' => 'admin/console'], function(){
         Route::get('/profile', [AdminController::class,'profile'])->name('admin.profile');
         Route::post('/update_profile', [AdminController::class,'update_profile'])->name('admin.update_profile');
 
-        Route::get('/receipt/{mid}/{id}', [AdminController::class,'receipt'])->name('admin.receipt');
+        Route::get('/receipt/{id}', [AdminController::class,'receipt'])->name('admin.receipt');
 
         Route::get('/get_dashbord_data', [AdminController::class,'get_dashbord_data'])->name('admin.get_dashbord_data');
 
@@ -77,13 +77,16 @@ Route::group(['prefix' => 'admin/console'], function(){
         // =========================================Fees===========================================
 
         Route::get('outstanding/{account_no}', [FeeController::class,'outstanding'])->name('admin.outstanding');
+        
+        Route::get('upgrade/{account_no}', [FeeController::class,'upgrade'])->name('admin.upgrade');
 
         Route::post('/pay-outstanding', [FeeController::class,'pay_outstanding'])->name('admin.pay.outstanding');
 
         Route::get('/member-receipts/{mid}/{id}', [FeeController::class,'member_receipts'])->name('admin.member.receipts');
         
-
-
+        Route::post('/add-plan', [FeeController::class,'add_plan'])->name('admin.add_plan');
+        Route::post('/ajax_manage_revenue_data', [FeeController::class,'ajax_manage_revenue_data'])->name('revenue.data.get');
+        Route::post('/get_filtered_revenue', [FeeController::class,'get_filtered_revenue'])->name('get.filter.revenue.data');
     });
 
 

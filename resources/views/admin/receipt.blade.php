@@ -42,7 +42,7 @@ header.top-bar h1 {
 	 color: #322d28;
 }
  table.invoice tr.header td img {
-	 max-width: 220px !important;
+	 max-width: 140px !important;
 }
  table.invoice tr.header td h2 {
 	 text-align: right;
@@ -109,7 +109,7 @@ header.top-bar h1 {
 }
  table.invoice tr.totals table tr.total td {
 	 font-size: 1.2em;
-	 padding-top: 0.5em;
+	 padding-bottom: 0.5em;
 	 font-weight: 700;
 }
  table.invoice tr.totals table tr.total td:last-child {
@@ -239,10 +239,7 @@ header.top-bar h1 {
 <div class="row expanded" id="printableArea">
   <main class="columns">
     <div class="inner-container">
-    <header class="row align-center buttn">
-        <a class="button hollow secondary"><i class="ion ion-chevron-left"></i> Go Back</a>
-        &nbsp;&nbsp;<a class="button" onclick="printDiv('printableArea')"><i class="ion ion-ios-printer-outline"></i> Print Invoice</a>
-      </header>
+
     <section class="row">
       <div class="callout large invoice-container">
         <table class="invoice">
@@ -260,7 +257,7 @@ header.top-bar h1 {
               Thank you for join with us.
             </td>
             <td class="text-right">
-              <span class="num">Receipt No. #{{$bill->id}}</span><br>
+              <span class="num">Receipt No. #{{$bill[0]->receipt_no}}</span><br>
               {{date('F-d, Y')}}
             </td>
           </tr>
@@ -270,17 +267,17 @@ header.top-bar h1 {
                 <thead>
                   <tr>
                     <th class="desc">Plan</th>
-                    <th class="id"></th>
-                    <th class="qty"></th>
+                    <th class="id">Membership</th>
+                    <th class="qty">Inst No.</th>
                     <th class="amt">Subtotal</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr class="item">
-                    <td class="desc">{{$bill->package}}</td>
-                    <td class="id num"></td>
-                    <td class="qty"></td>
-                    <td class="amt">{{number_format($bill->total_amount,2)}}</td>
+                    <td class="desc">{{$account->package}}</td>
+                    <td class="id num">{{$account->type}}</td>
+                    <td class="qty">{{$bill[0]->installment_no}}</td>
+                    <td class="amt">{{number_format($account->total_amount,2)}}</td>
                   </tr>
                 </tbody>
               </table>
@@ -292,24 +289,46 @@ header.top-bar h1 {
               <table>
                 <tr class="subtotal">
                   <td class="num">Subtotal</td>
-                  <td class="num">₹ {{number_format($bill->total_amount,2)}}</td>
+                  <td class="num">₹ {{number_format($account->total_amount,2)}}</td>
                 </tr>
+                @if($account->discount > 0)
                 <tr class="fees">
                   <td class="num">Discount</td>
-                  <td class="num">₹ {{number_format($bill->discount,2)}}</td>
+                  <td class="num"><?php $diss = (((double)$account->total_amount / 100) * (double)$account->discount) ?>{{' ₹ '. $diss.' ('.$account->discount.'%)'}} </td>
                 </tr>
-                <tr class="total">
+                @endif
+                <tr class="fees">
                   <td>Total</td>
-                  <td>₹ {{number_format($bill->payable_amount,2)}}</td>
+                  <td>₹ {{number_format($account->payable_amount,2)}}</td>
                 </tr>
+                @if($bill[0]->installment_no > 1)
+                <?php $total_last_paid = 0; ?>
+                @for ($i = 1; $i < $bill[0]->installment_no; $i++)
+                <tr class="fees">
+                  <td>Inst no. {{$i}}</td>
+                  <td>₹ {{number_format($bill[0]->where('account_id',$bill[0]->account_id)->where('installment_no',$i)->sum('paid_amount'),2)}}</td>
+                  <?php $total_last_paid += $bill[0]->where('account_id',$bill[0]->account_id)->where('installment_no',$i)->sum('paid_amount'); ?>
+                </tr>
+                @endfor
+                <tr class="total">
+                  <td>Last Paid</td>
+                  <td>₹ {{number_format($total_last_paid,2)}}</td>
+                </tr>
+                @endif
+                @foreach ($bill as $b)
+                <tr class="fees">
+                  <td>{{$b->head}}</td>
+                  <td>₹ {{number_format($b->paid_amount,2)}}</td>
+                </tr>
+                @endforeach
                 <tr class="total">
                   <td>Paid</td>
-                  <td>₹ {{number_format($bill->paid_amount,2)}}</td>
+                  <td>₹ {{number_format($b->where('receipt_no',$b->receipt_no)->sum('paid_amount'),2)}}</td>
                 </tr>
-                @if($bill->balance_amount != 0)
+                @if($b->where('receipt_no',$b->receipt_no)->sum('outstanding') >= 0)
                 <tr class="fees">
                   <td class="num">Outstanding</td>
-                  <td class="num">₹ {{number_format($bill->balance_amount,2)}}</td>
+                  <td class="num">₹ {{number_format($b->where('receipt_no',$b->receipt_no)->sum('outstanding'),2)}}</td>
                 </tr>
                 @endif
                 
@@ -329,15 +348,19 @@ header.top-bar h1 {
           </div>
           <div class="columns">
             <h5>Payment Information</h5>
-            <p>{{$bill->pay_mode}}
+            <p><b>Pay Mode : </b>{{$bill[0]->pay_mode}}, <b>Pay Method : </b>{{$bill[0]->pay_method}}
               </p>
               <br><br>
-              <div  style="text-align:center"> <b> {{App\Models\User::findOrFail($bill->created_by)->name}} <br> Receiver </b> </div>
+              <div  style="text-align:center"> <b> {{App\Models\User::findOrFail($account->created_by)->name}} <br> Receiver </b> </div>
           </div>
         </div>
         </section>
       </div>
     </section>
+    <header class="row align-center buttn">
+        <!-- <a class="button hollow secondary"><i class="ion ion-chevron-left"></i> Go Back</a> -->
+        &nbsp;&nbsp;<a class="button" onclick="printDiv('printableArea')"><i class="ion ion-ios-printer-outline"></i> Print Invoice</a>
+      </header>
     </div>
   </main>
 </div>

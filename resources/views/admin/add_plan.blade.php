@@ -4,114 +4,18 @@
 <section class="section">
   <div class="card">
     <div class="card-body">
-      <h5 class="card-title">Member Personal Details</h5>
+    <h5 class="card-title">Add Membership Plan</h5>
 
       <!-- Multi Columns Form -->
 
-      <form class="row g-3 needs-validation" method="post" action="{{route('admin.create_member')}}"
+      <form class="row g-3 needs-validation" method="post" action="{{route('admin.add_plan')}}"
         enctype='multipart/form-data' id="MemberForm">
         @csrf
-        <div class="col-md-8">
-          <label for="inputName5" class="form-label">Member Name</label>
-          <input type="text" class="form-control" name="name" id="inputName5" value="{{$member->name}}"
-            placeholder="Name">
-          @error('name')
-        <div class="text-danger">{{ $message }}</div>
-      @enderror
-        </div>
+
+        <h5 class="card-title pl-2"> Member Name : {{$member->name}}</h5>
+        <input type="hidden" value="{{$member->id}}" name="member_id">
+
         <div class="col-md-4">
-          <label for="inputdate5" class="form-label">Joinining Date</label>
-          <input type="date" class="form-control" id="inputdate5" value="{{date('Y-m-d')}}" name="join_date" required>
-        </div>
-
-
-        <div class="col-md-3">
-          <label for="inputMobile5" class="form-label">Mobile No.</label>
-          <input type="text" class="form-control" id="inputMobile5" name="mobile" placeholder="Mobile"
-          value="{{$member->mobile}}">
-          @error('mobile')
-        <div class="text-danger">{{ $message }}</div>
-      @enderror
-        </div>
-
-        <div class="col-md-3">
-          <label for="inputaltmobile5" class="form-label">Alt Mobile No.</label>
-          <input type="text" class="form-control" id="inputaltmobile5" name="alt_mobile" placeholder="Alternate No."
-            value="{{ old('alt_mobile') }}">
-        </div>
-
-        <div class="col-md-3">
-          <label for="inputEmail5" class="form-label">Email</label>
-          <input type="email" class="form-control" id="inputEmail5" name="email" placeholder="E-Mail ID"
-          value="{{$member->email}}">
-          @error('email')
-        <div class="text-danger">{{ $message }}</div>
-      @enderror
-        </div>
-
-        <div class="col-md-3">
-          <label for="inputdob" class="form-label">D.O.B</label>
-          <input type="date" class="form-control" id="inputdob" name="dob" value="{{ old('dob') }}">
-          @error('dob')
-        <div class="text-danger">{{ $message }}</div>
-      @enderror
-        </div>
-
-        <div class="col-md-3">
-          <label for="inputGender" class="form-label">Gender</label>
-          <select id="inputGender" class="form-select" name="gender">
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Other">Other</option>
-            @error('gender')
-        <div class="text-danger">{{ $message }}</div>
-      @enderror
-          </select>
-        </div>
-
-        <div class="col-md-3">
-          <label for="inputPrebooked" class="form-label">Pre-Booked</label>
-          <select id="inputPrebooked" class="form-select" name="pre_booked">
-            <option value="0" selected>No</option>
-            <option Value="1">Yes</option>
-          </select>
-        </div>
-        <div class="col-md-3">
-          <label for="inputRefferedBy" class="form-label">Reffer By</label>
-          <select id="inputRefferedBy" class="form-select" name="reference_type">
-            <option value="1" selected>Existing Member</option>
-            <option Value="0">Outsider</option>
-          </select>
-        </div>
-
-        <div class="col-md-3" id="reffer_id">
-          <label for="inputreffereid" class="form-label">Reffered ID</label>
-          <input list="refferid" type="text" class="form-control" id="inputreffereid" name="refference_id"
-            placeholder="Existing Member ID">
-          <datalist id="refferid">
-            @foreach($members as $m)
-        <option value="{{$m->id}}">{{$m->name}}</option>
-      @endforeach
-          </datalist>
-        </div>
-
-        <div class="col-md-3" id="reffer_name" style="display: none;">
-          <label for="inputreffername" class="form-label">Reffered Name</label>
-          <input type="text" class="form-control" id="inputreffername" name="refference_name" placeholder="Referel Name"
-            value="{{ old('refference_name') }}">
-        </div>
-
-        <div class="col-md-12">
-          <label for="inputAddress5" class="form-label">Address</label>
-          <textarea class="form-control" id="inputAddres5s" placeholder="Address"
-            name="address">{{ old('address') }}</textarea>
-        </div>
-
-        <h5 class="card-title">Membership Plan Details</h5>
-
-
-
-        <div class="col-md-6">
           <label for="inputPckage" class="form-label">Membership Package</label>
           <select id="inputPackage" class="form-select" name="package">
             <option value="1 Month" selected>1 Month</option>
@@ -121,7 +25,7 @@
             <option value="12 Month">12 Month</option>
           </select>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
           <label for="inputType" class="form-label">Membership Type</label>
           <select id="inputType" class="form-select" name="type">
             <option value="General Membership" selected>General Membership</option>
@@ -129,6 +33,10 @@
             <option value="Ladies Batch Offer">Ladies BAtch Offer</option>
             <option value="Student Offer">Student Offer</option>
           </select>
+        </div>
+        <div class="col-md-4">
+          <label for="inputdate5" class="form-label">Start Date</label>
+          <input type="date" class="form-control" id="inputdate5" value="{{date('Y-m-d')}}" name="join_date" required>
         </div>
         <div>
           <button type="button" id="addRow" class="btn btn-primary float-right">Add Heads</button>

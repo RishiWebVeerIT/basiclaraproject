@@ -3,9 +3,16 @@
 
 <section class="section">
 <div class="card">
+  
             <div class="card-body">
-            <h5 class="card-title">Member Personal Details</h5>
+        
 
+              <div class="d-flex justify-content-between">
+              <h5 class="card-title">Member Personal Details</h5>
+              <h5 class="card-title">Member ID : {{$member->id}}</h5>
+              <h5 class="card-title">Biometric ID : {{$member->biometric}}</h5>
+              </div>
+            
               <!-- Multi Columns Form -->
               <form class="row g-3" method="post" action="{{route('admin.update_member',[$member->id])}}" enctype='multipart/form-data'>
                 @csrf
@@ -92,16 +99,28 @@
 <section class="section">
 <div class="card">
             <div class="card-body">
+            <div class="d-flex justify-content-between">
+
             <h5 class="card-title">Receipts</h5>
+            <div>
+            <a class="btn btn-primary" href="{{route('admin.upgrade',[$member->id])}}">Add New Membership Plan</a>
+            </div>
+              
+              </div>
+            
               <table class="table datatable">
                 <thead>
                 <tr>
                       <th>Sr. No</th>
                       <th>Plan</th>
+                      <th>Membership</th>
                       <th>Month</th>
                       <th>Year</th>
+                      <th>Total Amount</th>
                       <th>Paid</th>
                       <th>Outstanding</th>
+                      <th>Expiry Date</th>
+                      <th>Status</th>
                       <th>Receipt</th>
                     </tr>
                 </thead>
@@ -111,12 +130,16 @@
                     <tr>
                       <th>{{$i++}}</th>
                       <td>{{$r->package}}</td>
+                      <td>{{$r->type}}</td>
                       <td>{{$r->month}}</td>
                       <td>{{$r->year}}</td>
-
-                      <td>{{$r->paid_amount}}</td>
-                      <td>{{$r->balance_amount}}</td>
-                      <td><a class="btn btn-success" href="{{route('admin.receipt',[$member->id,$r->id])}}">Receipts</a> &nbsp; @if($r->balance_amount > 0) <a class="btn btn-primary" href="{{route('admin.outstanding',[$r->id])}}">Pay Outstanding</a> @endif </td>
+                      <td> ₹ {{$r->payable_amount}}</td>
+                      <td> ₹ {{$r->paid_amount}}</td>
+                      <td> ₹ {{$r->balance_amount}}</td>
+                      <td>{{date('d-m-Y', strtotime($r->due_date));}}</td>
+                      <td>@if($r->membership_status) <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i> Active</span>@else<span class="badge bg-secondary"><i class="bi bi-exclamation-octagon me-1"></i>Expired</span>  @endif</td>
+                      <td><a class="btn btn-success" href="{{route('admin.member.receipts',[$member->id,$r->id])}}">Receipts</a> &nbsp; @if($r->balance_amount > 0) <a class="btn btn-primary" href="{{route('admin.outstanding',[$r->id])}}">Pay Outstanding</a> @endif 
+                    </td>
                     </tr>
                     @endforeach
                     </tbody>

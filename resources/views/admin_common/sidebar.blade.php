@@ -50,14 +50,14 @@
       </li>
       <li>
         <a href="{{Route('admin.revenue')}}"  class="{{ Request::routeIs('admin.revenue') ? 'active' : '' }}">
-          <i class="bi bi-circle"></i><span>Revenue</span>
+          <i class="bi bi-circle"></i><span>Bills</span>
         </a>
       </li>
-      <li>
+      <!-- <li>
         <a href="{{Route('admin.dfc')}}"  class="{{ Request::routeIs('admin.dfc') ? 'active' : '' }}">
           <i class="bi bi-circle"></i><span>D.F.C</span>
         </a>
-      </li>
+      </li> -->
     </ul>
   </li>
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use Illuminate\Http\Request;
 use App\Models\Enquiry;
 use App\Models\Notification;
@@ -11,7 +12,11 @@ class UserController extends Controller
     public function index()
     {
         $pageTitle = 'Home';
+        if(Auth::user()) {
     return view('users.index',compact('pageTitle'));
+        } else {
+            return view('admin.coming_soon',compact('pageTitle'));
+        }
     }
 
     public function bmi_calculator()
